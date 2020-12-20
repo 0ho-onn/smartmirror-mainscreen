@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # made by onips(0hoon)
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets    #pip install pyqt5(pip install python3-pyqt5)
 import datetime       #get time
 from time import sleep
+import time
 import threading
 import tkinter as tk    #python GUI programing?
 import urllib.request   #this for weather api url
@@ -16,6 +19,8 @@ from PyQt5.QtGui import QPixmap, QImage  #use image in Python
 running = True
 #for list
 isHide = 0
+picNum = 0
+
 #read stream for weather
 def readConfig(filename):
     global json
@@ -54,30 +59,30 @@ class Ui_MainWindow(object):
         #-------------------------------------------------------------------------
         #date label
         self.date = QtWidgets.QLabel(self.centralwidget)
-        self.date.setGeometry(QtCore.QRect(30, 25, 320, 50))
+        self.date.setGeometry(QtCore.QRect(30, 25, 350, 70))
         self.date.setObjectName("date")
-        self.date.setFont(QtGui.QFont("",30))
+        self.date.setFont(QtGui.QFont("",45))
         
         #time label
         self.time = QtWidgets.QLabel(self.centralwidget)
-        self.time.setGeometry(QtCore.QRect(30, 90, 320, 31))
+        self.time.setGeometry(QtCore.QRect(30, 100, 350, 50))
         self.time.setObjectName("time")
-        self.time.setFont(QtGui.QFont("",20))
+        self.time.setFont(QtGui.QFont("",35))
         #-------------------------------------------------------------------------
         #weather label
         self.weather = QtWidgets.QLabel(self.centralwidget)
-        self.weather.setGeometry(QtCore.QRect(1130, 5, 100, 90))
+        self.weather.setGeometry(QtCore.QRect(900, 5, 100, 90))
         self.weather.setObjectName("weather")
         
         #temp label
         self.temp = QtWidgets.QLabel(self.centralwidget)
-        self.temp.setGeometry(QtCore.QRect(1100, 100, 300, 20))
+        self.temp.setGeometry(QtCore.QRect(850, 90, 330, 50))
         self.temp.setObjectName("temp")
-        self.temp.setFont(QtGui.QFont("",15))
+        self.temp.setFont(QtGui.QFont("",30))
         #-------------------------------------------------------------------------
         #cam view point
         self.camview = QtWidgets.QLabel(self.centralwidget)
-        self.camview.setGeometry(QtCore.QRect(0, 150, 1100, 700))
+        self.camview.setGeometry(QtCore.QRect(0, 300, 1600, 1200))
         self.camview.setObjectName("camview")
         
         #cam view scroll area
@@ -92,91 +97,63 @@ class Ui_MainWindow(object):
         #-------------------------------------------------------------------------
         #clothes save button
         self.btn_start = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_start.setGeometry(QtCore.QRect(570, 900, 91, 61))
+        self.btn_start.setGeometry(QtCore.QRect(500, 1700, 91, 61))
         self.btn_start.setObjectName("btn_start")
         #-------------------------------------------------------------------------
         #clothes save button
         self.cloth_save = QtWidgets.QPushButton(self.centralwidget)
-        self.cloth_save.setGeometry(QtCore.QRect(80, 900, 91, 61))
+        self.cloth_save.setGeometry(QtCore.QRect(80, 1700, 91, 61))
         self.cloth_save.setObjectName("cloth_save")
+        
+        #clothes save success
+        self.save_success = QtWidgets.QLabel(self.centralwidget)
+        self.save_success.setGeometry(QtCore.QRect(300, 750, 700, 300))
+        self.save_success.setObjectName("save_success")
+        self.save_success.setFont(QtGui.QFont("",50))
         #-------------------------------------------------------------------------
         #clothes list button
         self.btn_list = QtWidgets.QPushButton(self.centralwidget)
-        self.btn_list.setGeometry(QtCore.QRect(1100, 900, 91, 61))
+        self.btn_list.setGeometry(QtCore.QRect(900, 1700, 91, 61))
         self.btn_list.setObjectName("btn_list")
         #-------------------------------------------------------------------------
         #list layout
         self.label1 = QtWidgets.QLabel(self.centralwidget)
-        self.label1.setGeometry(QtCore.QRect(200, 100, 300, 300))
+        self.label1.setGeometry(QtCore.QRect(140, 150, 300, 300))
         self.label1.setObjectName("label1")
         
         self.label2 = QtWidgets.QLabel(self.centralwidget)
-        self.label2.setGeometry(QtCore.QRect(500, 100, 300, 300))
+        self.label2.setGeometry(QtCore.QRect(470, 150, 300, 300))
         self.label2.setObjectName("label2")
         
         self.label3 = QtWidgets.QLabel(self.centralwidget)
-        self.label3.setGeometry(QtCore.QRect(800, 100, 300, 300))
+        self.label3.setGeometry(QtCore.QRect(800, 150, 300, 300))
         self.label3.setObjectName("label3")
         
         self.label4 = QtWidgets.QLabel(self.centralwidget)
-        self.label4.setGeometry(QtCore.QRect(200, 400, 300, 300))
+        self.label4.setGeometry(QtCore.QRect(140, 350, 300, 300))
         self.label4.setObjectName("label4")
         
         self.label5 = QtWidgets.QLabel(self.centralwidget)
-        self.label5.setGeometry(QtCore.QRect(500, 400, 300, 300))
+        self.label5.setGeometry(QtCore.QRect(470, 350, 300, 300))
         self.label5.setObjectName("label5")
         
         self.label6 = QtWidgets.QLabel(self.centralwidget)
-        self.label6.setGeometry(QtCore.QRect(800, 400, 300, 300))
+        self.label6.setGeometry(QtCore.QRect(800, 350, 300, 300))
         self.label6.setObjectName("label6")
         
         self.label7 = QtWidgets.QLabel(self.centralwidget)
-        self.label7.setGeometry(QtCore.QRect(200, 700, 300, 300))
+        self.label7.setGeometry(QtCore.QRect(140, 550, 300, 300))
         self.label7.setObjectName("label7")
         
         self.label8 = QtWidgets.QLabel(self.centralwidget)
-        self.label8.setGeometry(QtCore.QRect(500, 700, 300, 300))
+        self.label8.setGeometry(QtCore.QRect(470, 550, 300, 300))
         self.label8.setObjectName("label8")
         
         self.label9 = QtWidgets.QLabel(self.centralwidget)
-        self.label9.setGeometry(QtCore.QRect(800, 700, 300, 300))
+        self.label9.setGeometry(QtCore.QRect(800, 550, 300, 300))
         self.label9.setObjectName("label9")
         
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label1.setPixmap(QPixmap(pixmap))
-        self.label1.hide()
         
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label2.setPixmap(QPixmap(pixmap))
-        self.label2.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label3.setPixmap(QPixmap(pixmap))
-        self.label3.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label4.setPixmap(QPixmap(pixmap))
-        self.label4.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label5.setPixmap(QPixmap(pixmap))
-        self.label5.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label6.setPixmap(QPixmap(pixmap))
-        self.label6.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label7.setPixmap(QPixmap(pixmap))
-        self.label7.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label8.setPixmap(QPixmap(pixmap))
-        self.label8.hide()
-        
-        pixmap = QPixmap("./clothes/images.jpeg")
-        self.label9.setPixmap(QPixmap(pixmap))
-        self.label9.hide()
         
         #-------------------------------------------------------------------------
         
@@ -197,6 +174,9 @@ class Ui_MainWindow(object):
         self.btn_start.setText(_translate("MainWindow", "camera start"))
         self.cloth_save.setText(_translate("MainWindow", "clothes save"))
         self.btn_list.setText(_translate("MainWindow", "clothes list"))
+        
+        self.save_success.setText(_translate("MainWindow", "save complete"))
+        self.save_success.hide()
 
         
         #-------------------------------------------------------------------------
@@ -213,17 +193,18 @@ class Ui_MainWindow(object):
             if (now.hour >= 12):
                 AmOrPm = "PM"
                 hour = now.hour % 12
-            if (now.hour == 12):
+            elif (now.hour == 12):
                 hour = 12
-            if (now.hour < 10):
-                hour = "0" + str(hour)
-            if (now.minute < 10):
-                minute = "0" + str(minute)
             else:
                 AmOrPm = "AM"
-
-            self.date.setText("%sY %sM %sD" %(now.year, now.month, now.day))
-            self.time.setText(AmOrPm+" %s : %s" %(hour, minute))
+                
+            if (int(hour) < 10):
+                hour = "0" + str(hour)
+            if (int(minute) < 10):
+                minute = "0" + str(minute)
+            
+            self.date.setText("%s/%s/%s" %(now.year, now.month, now.day))
+            self.time.setText("%s : %s " %(hour, minute)+AmOrPm)
             sleep(1)
     
     #weather function
@@ -238,10 +219,10 @@ class Ui_MainWindow(object):
         config = readConfig('weatherData.json')
         weather = config['weather'][0]['icon']
         temp = str(round(config['main']['temp']))
-        #print(weather +" " + temp)
+        print(weather +" " + temp)
         
         #request weather icon
-        data = urllib.request.urlopen("http://openweathermap.org/img/wn/%s@2x.png" %(weather)).read()  #%s to 10d vision
+        data = urllib.request.urlopen("http://openweathermap.org/img/wn/02d@2x.png").read()  #%s to 10d vision
         pixmap = QPixmap()
         pixmap.loadFromData(data)
         self.weather.setPixmap(pixmap)
@@ -252,11 +233,12 @@ class Ui_MainWindow(object):
     #show cam function
     def show_camera(self, MainWindow):
         global running        #running for cam off ***(not yet)***
+        global img
         
         cam = cv2.VideoCapture(0)
         
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)    #set camera view size
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)    #set camera view size
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
         width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.camview.resize(width, height)
@@ -269,22 +251,78 @@ class Ui_MainWindow(object):
                 qImg = QtGui.QImage(img.data, w, h, w*c, QtGui.QImage.Format_RGB888)
                 pixmap = QtGui.QPixmap.fromImage(qImg)
                 self.camview.setPixmap(pixmap)
+                
             else:
                 QtWidgets.QMessageBox.about(win, "Error", "Cannot read frame.")
                 print("cannot read frame.")
                 break
+            
+            #if (isSave == 1):
+                
+                    
         cam.release()
         print("Thread end.")
         
-        
     #image save function
-    #def save_image(self, MainWindow):
-     #   save_img = cv2.imread(image)
-     #   cv2.imwrite('1.jpg', save_img)
+    def save_image(self, MainWindow):
+        global img
+        global picNum
+        
+        picNum = picNum + 1
+        
+        cv2.imwrite("./clothes/%s.png" %(picNum), img, params=[cv2.IMWRITE_PNG_COMPRESSION, 0])
+        self.save_success.show()
+        time.sleep(2)
+        self.save_success.hide()
         
     #list show function
     def list_show(self, MainWindow):
         global isHide
+        
+        pixmap = QPixmap("./clothes/1.png")
+        pixmap = pixmap.scaledToWidth(300)
+        self.label1.setPixmap(QPixmap(pixmap))
+        self.label1.hide()
+        
+        pixmap2 = QPixmap("./clothes/2.png")
+        pixmap2 = pixmap2.scaledToWidth(300)
+        self.label2.setPixmap(QPixmap(pixmap2))
+        self.label2.hide()
+        
+        pixmap3 = QPixmap("./clothes/3.png")
+        pixmap3 = pixmap3.scaledToWidth(300)
+        self.label3.setPixmap(QPixmap(pixmap3))
+        self.label3.hide()
+        
+        pixmap4 = QPixmap("./clothes/4.png")
+        pixmap4 = pixmap4.scaledToWidth(300)
+        self.label4.setPixmap(QPixmap(pixmap4))
+        self.label4.hide()
+        
+        pixmap5 = QPixmap("./clothes/5.png")
+        pixmap5 = pixmap5.scaledToWidth(300)
+        self.label5.setPixmap(QPixmap(pixmap5))
+        self.label5.hide()
+        
+        pixmap6 = QPixmap("./clothes/6.png")
+        pixmap6 = pixmap6.scaledToWidth(300)
+        self.label6.setPixmap(QPixmap(pixmap6))
+        self.label6.hide()
+        
+        pixmap7 = QPixmap("./clothes/7.png")
+        pixmap7 = pixmap7.scaledToWidth(300)
+        self.label7.setPixmap(QPixmap(pixmap7))
+        self.label7.hide()
+        
+        pixmap8 = QPixmap("./clothes/8.png")
+        pixmap8 = pixmap8.scaledToWidth(300)
+        self.label8.setPixmap(QPixmap(pixmap8))
+        self.label8.hide()
+        
+        pixmap9 = QPixmap("./clothes/9.png")
+        pixmap9 = pixmap9.scaledToWidth(300)
+        self.label9.setPixmap(QPixmap(pixmap9))
+        self.label9.hide()
         
         if (isHide == 0):
             self.label1.show()
@@ -329,10 +367,10 @@ class Ui_MainWindow(object):
         thread.daemon = True
         thread.start()
     
-    #def imgSave_start(self, MainWindow):
-     #   thread = threading.Thread(target=self.save_image, args=(self,))
-     #   thread.daemon = True
-     #   thread.start()
+    def imgSave_start(self, MainWindow):
+        thread = threading.Thread(target=self.save_image, args=(self,))
+        thread.daemon = True
+        thread.start()
     
     def list_start(self, MainWindow):
         thread = threading.Thread(target=self.list_show, args=(self,))
@@ -352,7 +390,7 @@ if __name__ == "__main__":
     ui.weather_start(MainWindow)
     #ui.cam_start(MainWindow)
     ui.btn_start.clicked.connect(lambda: ui.cam_start(MainWindow))    #lambda for use arg
-    #ui.btn_start.clicked.connect(lambda: ui.imgSave_start(MainWindow))
+    ui.cloth_save.clicked.connect(lambda: ui.imgSave_start(MainWindow))
     ui.btn_list.clicked.connect(lambda: ui.list_start(MainWindow))
     
     MainWindow.show()
